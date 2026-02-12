@@ -11,10 +11,9 @@ from dotenv import load_dotenv
 logger_utils = logging.getLogger("utils")
 
 
-def get_transactions() -> pd.DataFrame:
+def get_transactions(path_to_xlsx: str) -> pd.DataFrame:
     """Функция, преобразующая файл транзакций из формата xlsx в объект dataframe"""
     logger_utils.info("Начало работы функции..")
-    path_to_xlsx = "../data/operations.xlsx"
     if os.path.exists(path_to_xlsx):
         df_transactions = pd.read_excel(path_to_xlsx)
     else:
@@ -42,20 +41,20 @@ def get_greeting() -> str:
     return greeting
 
 
-def get_filtred_dict(input_date: str) -> list[dict]:
+def get_filtred_dict(input_date: str, path_to_xlsx: str) -> list[dict]:
     """Функция, возвращающая отфильтрованный по дате и статусу список словарей транзакций"""
     logger_utils.info("Начало работы функции..")
     try:
         input_date_obj = datetime.datetime.strptime(input_date, "%Y-%m-%d %H:%M:%S")
         data_start_month = input_date_obj.replace(day=1, hour=00, minute=00, second=00)
-        dict_transactions = get_transactions().to_dict(orient="records")
+        dict_transactions = get_transactions(path_to_xlsx).to_dict(orient="records")
         list_transactions_date = [
             transactions
             for transactions in dict_transactions
             if data_start_month
-            <= datetime.datetime.strptime(transactions.get("Дата операции", ""), "%d.%m.%Y %H:%M:%S")
-            <= input_date_obj
-            and transactions.get("Статус") == "OK"
+               <= datetime.datetime.strptime(transactions.get("Дата операции", ""), "%d.%m.%Y %H:%M:%S")
+               <= input_date_obj
+               and transactions.get("Статус") == "OK"
         ]
         logger_utils.info(
             "Список словарей транзакций успешно отфильтрован по дате и статусу. Завершение работы функции."
@@ -67,16 +66,16 @@ def get_filtred_dict(input_date: str) -> list[dict]:
         return [{}]
 
 
-def get_cards_data(input_date: str) -> list[dict]:
+def get_cards_data(input_date: str, path_to_xlsx: str) -> list[dict]:
     """Функция, возвращающая список словарей крайних цифр, сумм расходов и сумм кэшбека по каждой карте"""
     logger_utils.info("Начало работы функции..")
     try:
-        df_transactions = pd.DataFrame(get_filtred_dict(input_date))
+        df_transactions = pd.DataFrame(get_filtred_dict(input_date, path_to_xlsx))
         not_null_df_transactions = df_transactions[["Номер карты", "Сумма платежа", "Дата операции"]].loc[
             (df_transactions["Номер карты"].notnull())
             & (df_transactions["Сумма платежа"].notnull())
             & (df_transactions["Дата операции"].notnull() & (df_transactions["Сумма платежа"] < 0))
-        ]
+            ]
         group_df_transactions = not_null_df_transactions.groupby("Номер карты")["Сумма платежа"].sum()
         dict_transactions_filtred = group_df_transactions.to_dict()
         result = [
@@ -94,15 +93,15 @@ def get_cards_data(input_date: str) -> list[dict]:
         return [{}]
 
 
-def get_top_transactions(input_date: str) -> list[dict]:
+def get_top_transactions(input_date: str, path_to_xlsx: str) -> list[dict]:
     """Функция, возвращающая топ пять транзакций по сумме платежа"""
     logger_utils.info("Начало работы функции..")
-    list_transactions = get_filtred_dict(input_date)
+    list_transactions = get_filtred_dict(input_date, path_to_xlsx)
     if list_transactions:
         df_transactions = pd.DataFrame(list_transactions)
         df_transactions_not_nan = df_transactions[["Дата платежа", "Сумма платежа", "Категория", "Описание"]].loc[
             (df_transactions["Дата платежа"].notnull()) & (df_transactions["Сумма платежа"].notnull())
-        ]
+            ]
         dict_transactions_not_null = df_transactions_not_nan.to_dict(orient="records")
         if len(dict_transactions_not_null) >= 5:
             top_dict_transactions = sorted(
@@ -173,7 +172,6 @@ def get_stock_prices(path_to_json: str, base_currency: str, convert_currency: st
         .get("rub", "")
     )
     response_rate_float = float(response_rate)
-
     list_response_price = []
     for symbol in dict_of_prices["user_stocks"]:
         response_price = requests.get(
@@ -194,8 +192,8 @@ def get_stock_prices(path_to_json: str, base_currency: str, convert_currency: st
 
 
 if __name__ == "__main__":
-    print(get_greeting())
-    print(get_cards_data("2020-05-01 10:50:03"))
-    print(get_top_transactions("2020-05-01 10:50:03"))
-    print(get_rate("../user_settings.json", type_currency="RUB"))
+    # print(get_greeting())
+    # print(get_cards_data("2020-05-02 10:50:03", "../data/operations.xlsx"))
+    # print(get_top_transactions("2020-05-02 10:50:03", "../data/operations.xlsx"))
+    # print(get_rate("../user_settings.json", type_currency="RUB"))
     print(get_stock_prices("../user_settings.json", base_currency="USD", convert_currency="RUB"))

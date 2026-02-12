@@ -5,10 +5,12 @@ from typing import Any
 
 from src.utils import get_cards_data, get_greeting, get_rate, get_stock_prices, get_top_transactions
 
-if not os.path.exists("../logs"):
-    os.makedirs("../logs")
+BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+
+if not os.path.exists(os.path.join(BASE_DIR, "logs")):
+    os.makedirs(os.path.join(BASE_DIR, "logs"))
 logging.basicConfig(
-    filename="../logs/logger_views.log",
+    filename=os.path.join(BASE_DIR, "logs/logger_views.log"),
     filemode="w",
     format="%(asctime)s - %(name)s/%(funcName)s:%(levelname)s: %(message)s",
     level="INFO",
@@ -23,10 +25,10 @@ def root_function(input_date: str) -> Any:
     logger_views.info("Начало работы функции..")
     result = {
         "greeting": get_greeting(),
-        "cards": get_cards_data(input_date),
-        "top_transactions": get_top_transactions(input_date),
-        "currency_rates": get_rate("../user_settings.json", type_currency="RUB"),
-        "stock_prices": get_stock_prices("../user_settings.json", base_currency="USD", convert_currency="RUB"),
+        "cards": get_cards_data(input_date, os.path.join(BASE_DIR,"data/operations.xlsx")),
+        "top_transactions": get_top_transactions(input_date, os.path.join(BASE_DIR,"data/operations.xlsx")),
+        "currency_rates": get_rate(os.path.join(BASE_DIR, "user_settings.json"), type_currency="RUB"),
+        "stock_prices": get_stock_prices(os.path.join(BASE_DIR, "user_settings.json"), base_currency="USD", convert_currency="RUB"),
     }
     logger_views.info("Результат успешно получен. Завершение работы функции.")
     return json.dumps(result, indent=4, ensure_ascii=False)
