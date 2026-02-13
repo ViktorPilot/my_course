@@ -25,13 +25,16 @@ def root_function(input_date: str) -> Any:
     logger_views.info("Начало работы функции..")
     result = {
         "greeting": get_greeting(),
-        "cards": get_cards_data(input_date, os.path.join(BASE_DIR,"data/operations.xlsx")),
-        "top_transactions": get_top_transactions(input_date, os.path.join(BASE_DIR,"data/operations.xlsx")),
+        "cards": get_cards_data(input_date, os.path.join(BASE_DIR, "data/operations.xlsx")),
+        "top_transactions": get_top_transactions(input_date, os.path.join(BASE_DIR, "data/operations.xlsx")),
         "currency_rates": get_rate(os.path.join(BASE_DIR, "user_settings.json"), type_currency="RUB"),
-        "stock_prices": get_stock_prices(os.path.join(BASE_DIR, "user_settings.json"), base_currency="USD", convert_currency="RUB"),
+        "stock_prices": get_stock_prices(
+            os.path.join(BASE_DIR, "user_settings.json"), base_currency="USD", convert_currency="RUB"
+        ),
     }
     logger_views.info("Результат успешно получен. Завершение работы функции.")
-    return json.dumps(result, indent=4, ensure_ascii=False)
+    result_json = json.dumps(result, indent=4, ensure_ascii=False)
+    return result_json
 
 
 if __name__ == "__main__":

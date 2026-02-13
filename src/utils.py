@@ -52,9 +52,9 @@ def get_filtred_dict(input_date: str, path_to_xlsx: str) -> list[dict]:
             transactions
             for transactions in dict_transactions
             if data_start_month
-               <= datetime.datetime.strptime(transactions.get("Дата операции", ""), "%d.%m.%Y %H:%M:%S")
-               <= input_date_obj
-               and transactions.get("Статус") == "OK"
+            <= datetime.datetime.strptime(transactions.get("Дата операции", ""), "%d.%m.%Y %H:%M:%S")
+            <= input_date_obj
+            and transactions.get("Статус") == "OK"
         ]
         logger_utils.info(
             "Список словарей транзакций успешно отфильтрован по дате и статусу. Завершение работы функции."
@@ -75,7 +75,7 @@ def get_cards_data(input_date: str, path_to_xlsx: str) -> list[dict]:
             (df_transactions["Номер карты"].notnull())
             & (df_transactions["Сумма платежа"].notnull())
             & (df_transactions["Дата операции"].notnull() & (df_transactions["Сумма платежа"] < 0))
-            ]
+        ]
         group_df_transactions = not_null_df_transactions.groupby("Номер карты")["Сумма платежа"].sum()
         dict_transactions_filtred = group_df_transactions.to_dict()
         result = [
@@ -101,7 +101,7 @@ def get_top_transactions(input_date: str, path_to_xlsx: str) -> list[dict]:
         df_transactions = pd.DataFrame(list_transactions)
         df_transactions_not_nan = df_transactions[["Дата платежа", "Сумма платежа", "Категория", "Описание"]].loc[
             (df_transactions["Дата платежа"].notnull()) & (df_transactions["Сумма платежа"].notnull())
-            ]
+        ]
         dict_transactions_not_null = df_transactions_not_nan.to_dict(orient="records")
         if len(dict_transactions_not_null) >= 5:
             top_dict_transactions = sorted(
@@ -192,8 +192,8 @@ def get_stock_prices(path_to_json: str, base_currency: str, convert_currency: st
 
 
 if __name__ == "__main__":
-    # print(get_greeting())
-    # print(get_cards_data("2020-05-02 10:50:03", "../data/operations.xlsx"))
-    # print(get_top_transactions("2020-05-02 10:50:03", "../data/operations.xlsx"))
+    print(get_greeting())
+    print(get_cards_data("2020-01-03 12:49:52", "../data/operations.xlsx"))
+    print(get_top_transactions("2020-01-03 12:49:52", "../data/operations.xlsx"))
     # print(get_rate("../user_settings.json", type_currency="RUB"))
-    print(get_stock_prices("../user_settings.json", base_currency="USD", convert_currency="RUB"))
+    # print(get_stock_prices("../user_settings.json", base_currency="USD", convert_currency="RUB"))
