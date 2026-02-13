@@ -2,7 +2,7 @@ import pytest
 
 
 @pytest.fixture
-def get_filtred_dict_valid():
+def get_filtred_dict_valid() -> list[dict]:
     return [
         {"Дата операции": "04.02.2025 21:00:00", "Статус": "OK", "Банк": "Тинькофф"},
         {"Дата операции": "03.02.2025 12:00:00", "Статус": "OK", "Банк": "Тинькофф"},
@@ -12,7 +12,7 @@ def get_filtred_dict_valid():
 
 
 @pytest.fixture
-def get_cards_data_valid():
+def get_cards_data_valid() -> list[dict]:
     return [
         {
             "Дата операции": "04.02.2025 21:00:00",
@@ -53,7 +53,7 @@ def get_cards_data_valid():
 
 
 @pytest.fixture
-def get_top_transactions_valid():
+def get_top_transactions_valid() -> list[dict]:
     return [
         {
             "Дата платежа": "05.02.2025 12:01:00",
@@ -101,7 +101,7 @@ def get_top_transactions_valid():
 
 
 @pytest.fixture
-def get_top_transactions_valid_result():
+def get_top_transactions_valid_result() -> list[dict]:
     return [
         {
             "date": "05.04.2025 15:00:00",
@@ -132,12 +132,12 @@ def get_top_transactions_valid_result():
 
 
 @pytest.fixture
-def currency_and_stock():
+def currency_and_stock() -> dict:
     return {"user_currencies": ["USD", "EUR"], "user_stocks": ["AAPL", "AMZN"]}
 
 
 @pytest.fixture
-def get_rate_valid():
+def get_rate_valid() -> list[dict]:
     return [
         {
             "success": True,
@@ -157,12 +157,12 @@ def get_rate_valid():
 
 
 @pytest.fixture
-def currency_and_not_stock():
+def currency_and_not_stock() -> dict:
     return {"user_currencies": ["USD", "EUR"], "user_stocks": []}
 
 
 @pytest.fixture
-def test_root_function_valid_1():
+def test_root_function_valid_1() -> dict:
     return {
         "greeting": "Добрый день",
         "cards": [

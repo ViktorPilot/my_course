@@ -1,16 +1,11 @@
 import datetime
 import os.path
-from unittest.mock import patch, Mock
+from unittest.mock import Mock, patch
+
 import pytest
-from src.utils import (
-    get_greeting,
-    get_transactions,
-    get_filtred_dict,
-    get_cards_data,
-    get_top_transactions,
-    get_rate,
-    get_stock_prices,
-)
+
+from src.utils import (get_cards_data, get_filtred_dict, get_greeting, get_rate, get_stock_prices,
+                       get_top_transactions, get_transactions)
 from src.views import BASE_DIR
 
 
@@ -55,8 +50,8 @@ def test_get_greeting() -> None:
 
 @patch("src.utils.get_transactions")
 def test_get_filtred_dict_valid(mock_get_transactions: Mock, get_filtred_dict_valid: list[dict]) -> None:
-    """"Тестирование функции, возвращающей отфильтрованный по дате и статусу список словарей
-        транзакций при валидных значениях"""
+    """ "Тестирование функции, возвращающей отфильтрованный по дате и статусу список словарей
+    транзакций при валидных значениях"""
     mock_get_transactions.return_value.to_dict.return_value = get_filtred_dict_valid
     assert get_filtred_dict("2025-02-04 21:50:03", os.path.join(BASE_DIR, "data/operations.xlsx")) == [
         {"Дата операции": "04.02.2025 21:00:00", "Статус": "OK", "Банк": "Тинькофф"},
@@ -67,19 +62,21 @@ def test_get_filtred_dict_valid(mock_get_transactions: Mock, get_filtred_dict_va
 @patch("src.utils.get_transactions")
 def test_get_filtred_dict_not_date(mock_get_transactions: Mock, get_filtred_dict_valid: list[dict]) -> None:
     """Тестирование функции, возвращающей отфильтрованный по дате и статусу список словарей
-         транзакций при отсутствии операций в заданном периоде"""
+    транзакций при отсутствии операций в заданном периоде"""
     mock_get_transactions.return_value.to_dict.return_value = get_filtred_dict_valid
     assert get_filtred_dict("2025-02-01 21:50:03", os.path.join(BASE_DIR, "data/operations.xlsx")) == []
 
 
 def test_get_filtred_dict_error() -> None:
     """Тестирование функции, возвращающей отфильтрованный по дате и статусу список словарей
-        транзакций при ошибках в программе"""
+    транзакций при ошибках в программе"""
     assert get_filtred_dict("2025/02/01 21:50:03", os.path.join(BASE_DIR, "data/operations.xlsx")) == [{}]
 
 
 @patch("src.utils.get_filtred_dict")
-def test_get_cards_data_valid(mock_get_cards_data, get_cards_data_valid):
+def test_get_cards_data_valid(mock_get_cards_data: Mock, get_cards_data_valid: list[dict]) -> None:
+    """Тестирование функции, возвращающей список словарей крайних цифр, сумм расходов и сумм кэшбека
+    по каждой карте при валидных значениях"""
     mock_get_cards_data.return_value = get_cards_data_valid
     assert get_cards_data("2025-02-04 21:50:03", os.path.join(BASE_DIR, "data/operations.xlsx")) == [
         {"last_digits": "9998", "total_spent": 200, "cashback": 2.0}
@@ -94,14 +91,19 @@ def test_get_cards_data_valid(mock_get_cards_data, get_cards_data_valid):
         ("2021-01-21 04:50:03", "../data/operat.xlsx", [{}]),
     ],
 )
-def test_get_cards_data_not_transaction(date, adress, result):
+def test_get_cards_data_not_transaction(date: str, adress: str, result: list[dict]) -> None:
+    """Тестирование функции, возвращающей список словарей крайних цифр, сумм расходов и сумм кэшбека по каждой карте
+    при отсутствии транзакций в заданном периоде, неверном пути к файлу и неправильном формате даты"""
     assert get_cards_data(date, adress) == result
 
 
 @patch("src.utils.get_filtred_dict")
 def test_get_top_transactions_valid(
-    mock_get_top_transactions, get_top_transactions_valid, get_top_transactions_valid_result
-):
+    mock_get_top_transactions: Mock,
+    get_top_transactions_valid: list[dict],
+    get_top_transactions_valid_result: list[dict],
+) -> None:
+    """Тестирование функции, возвращающей топ пять транзакций по сумме платежа при валидных значениях"""
     mock_get_top_transactions.return_value = get_top_transactions_valid
     assert (
         get_top_transactions("2025-02-05 21:50:03", os.path.join(BASE_DIR, "data/operations.xlsx"))
@@ -110,7 +112,9 @@ def test_get_top_transactions_valid(
 
 
 @patch("src.utils.get_filtred_dict")
-def test_get_top_transactions_one(mock_get_top_transactions):
+def test_get_top_transactions_one(mock_get_top_transactions: Mock) -> None:
+    """Тестирование функции, возвращающей топ пять транзакций по сумме платежа
+    при одной транзакции в заданном периоде"""
     mock_get_top_transactions.return_value = [
         {
             "Дата платежа": "05.02.2025 12:01:00",
@@ -126,14 +130,19 @@ def test_get_top_transactions_one(mock_get_top_transactions):
 
 
 @patch("src.utils.get_filtred_dict")
-def test_get_top_transactions_empty(mock_get_top_transactions):
+def test_get_top_transactions_empty(mock_get_top_transactions: Mock) -> None:
+    """Тестирование функции, возвращающей топ пять транзакций по сумме платежа
+    при отсутствии транзакции в заданном периоде"""
     mock_get_top_transactions.return_value = []
     assert get_top_transactions("2025-02-05 21:50:03", os.path.join(BASE_DIR, "data/operations.xlsx")) == [{}]
 
 
 @patch("json.load")
 @patch("requests.get")
-def test_get_rate_valid(mock_requests, mock_json_load, currency_and_stock, get_rate_valid):
+def test_get_rate_valid(
+    mock_requests: Mock, mock_json_load: Mock, currency_and_stock: dict, get_rate_valid: list[dict]
+) -> None:
+    """Тестирование функции, возвращающей список актуального курса для заданных валют при валидных значениях"""
     mock_json_load.return_value = currency_and_stock
     mock_requests.return_value.status_code = 200
     mock_requests.return_value.json.side_effect = get_rate_valid
@@ -145,21 +154,27 @@ def test_get_rate_valid(mock_requests, mock_json_load, currency_and_stock, get_r
 
 @patch("json.load")
 @patch("requests.get")
-def test_get_rate_sc_400(mock_requests, mock_json_load, currency_and_stock, get_rate_valid):
+def test_get_rate_sc_400(
+    mock_requests: Mock, mock_json_load: Mock, currency_and_stock: dict, get_rate_valid: list[dict]
+) -> None:
+    """Тестирование функции, возвращающей список актуального курса для заданных валют при ошибке запроса на сервер"""
     mock_json_load.return_value = currency_and_stock
     mock_requests.return_value.status_code = 400
     mock_requests.return_value.json.side_effect = get_rate_valid
     assert get_rate(os.path.join(BASE_DIR, "user_settings.json"), type_currency="RUB") == []
 
 
-def test_get_rate_not_valid_path():
+def test_get_rate_not_valid_path() -> None:
+    """Тестирование функции, возвращающей список актуального курса
+    для заданных валют при неверном пути к файлу списка валют"""
     with pytest.raises(FileNotFoundError):
         get_rate("src/log.json", type_currency="RUB")
 
 
 @patch("json.load")
 @patch("requests.get")
-def test_get_stock_prices_valid(mock_requests_get_1, mock_json_load, currency_and_stock):
+def test_get_stock_prices_valid(mock_requests_get_1: Mock, mock_json_load: Mock, currency_and_stock: dict) -> None:
+    """Тестирование функции, возвращающей список актуального курса акций S&P500 при валидных значениях"""
     mock_json_load.return_value = currency_and_stock
     mock_requests_get_1.return_value.json.side_effect = [
         {
@@ -181,7 +196,9 @@ def test_get_stock_prices_valid(mock_requests_get_1, mock_json_load, currency_an
 
 @patch("json.load")
 @patch("requests.get")
-def test_get_stock_prices_empty(mock_requests_get_1, mock_json_load, currency_and_not_stock):
+def test_get_stock_prices_empty(mock_requests_get_1: Mock, mock_json_load: Mock, currency_and_not_stock: dict) -> None:
+    """Тестирование функции, возвращающей список актуального курса акций S&P500
+    при возврате с сервера пустого списка"""
     mock_json_load.return_value = currency_and_not_stock
     mock_requests_get_1.return_value.json.side_effect = [
         {
@@ -199,7 +216,8 @@ def test_get_stock_prices_empty(mock_requests_get_1, mock_json_load, currency_an
 
 @patch("json.load")
 @patch("requests.get")
-def test_get_stock_prices_sc_400(mock_requests_get_1, mock_json_load, currency_and_stock):
+def test_get_stock_prices_sc_400(mock_requests_get_1: Mock, mock_json_load: Mock, currency_and_stock: dict) -> None:
+    """Тестирование функции, возвращающей список актуального курса акций S&P500 при ошибке запроса на сервер"""
     mock_json_load.return_value = currency_and_stock
     mock_requests_get_1.return_value.json.side_effect = [
         {
@@ -216,6 +234,8 @@ def test_get_stock_prices_sc_400(mock_requests_get_1, mock_json_load, currency_a
     assert get_stock_prices(os.path.join(BASE_DIR, "user_settings.json"), "USD", "RUB") == []
 
 
-def test_get_stock_prices_not_valid_path():
+def test_get_stock_prices_not_valid_path() -> None:
+    """Тестирование функции, возвращающей список актуального курса акций S&P500
+    при неверном пути к файлу списка акций"""
     with pytest.raises(FileNotFoundError):
         get_stock_prices("data/user_setting.json", "USD", "RUB")
