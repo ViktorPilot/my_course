@@ -4,8 +4,15 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from src.utils import (get_cards_data, get_filtred_dict, get_greeting, get_rate, get_stock_prices,
-                       get_top_transactions, get_transactions)
+from src.utils import (
+    get_cards_data,
+    get_filtred_dict,
+    get_greeting,
+    get_rate,
+    get_stock_prices,
+    get_top_transactions,
+    get_transactions,
+)
 from src.views import BASE_DIR
 
 
@@ -197,7 +204,8 @@ def test_get_stock_prices_valid(mock_requests_get_1: Mock, mock_json_load: Mock,
 @patch("json.load")
 @patch("requests.get")
 def test_get_stock_prices_empty(mock_requests_get_1: Mock, mock_json_load: Mock, currency_and_not_stock: dict) -> None:
-    """Тестирование функции, возвращающей список актуального курса акций S&P500 при возврате с сервера пустого списка"""
+    """Тестирование функции, возвращающей список актуального курса акций S&P500
+    при возврате с сервера пустого списка"""
     mock_json_load.return_value = currency_and_not_stock
     mock_requests_get_1.return_value.json.side_effect = [
         {

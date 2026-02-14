@@ -8,7 +8,14 @@ import pandas as pd
 import requests
 from dotenv import load_dotenv
 
+BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+
 logger_utils = logging.getLogger("utils")
+logger_utils.setLevel("INFO")
+handler = logging.FileHandler(filename=os.path.join(BASE_DIR, "logs/logger_utils.log"), mode="w", encoding="utf-8")
+formatter = logging.Formatter("%(asctime)s - %(name)s/%(funcName)s:%(levelname)s: %(message)s")
+handler.setFormatter(formatter)
+logger_utils.addHandler(handler)
 
 
 def get_transactions(path_to_xlsx: str) -> pd.DataFrame:

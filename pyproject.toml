@@ -38,7 +38,8 @@ dev = [
 line-length = 119
 exclude = '''
 (
-  /(\.git)
+  /(\.git),
+  /(\.venv)
 )
 '''
 

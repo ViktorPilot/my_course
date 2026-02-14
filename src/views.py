@@ -9,14 +9,13 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 if not os.path.exists(os.path.join(BASE_DIR, "logs")):
     os.makedirs(os.path.join(BASE_DIR, "logs"))
-logging.basicConfig(
-    filename=os.path.join(BASE_DIR, "logs/logger_views.log"),
-    filemode="w",
-    format="%(asctime)s - %(name)s/%(funcName)s:%(levelname)s: %(message)s",
-    level="INFO",
-    encoding="utf-8",
-)
+
 logger_views = logging.getLogger("views")
+logger_views.setLevel("INFO")
+handler = logging.FileHandler(filename=os.path.join(BASE_DIR, "logs/logger_views.log"), mode="w", encoding="utf-8")
+formatter = logging.Formatter("%(asctime)s - %(name)s/%(funcName)s:%(levelname)s: %(message)s")
+handler.setFormatter(formatter)
+logger_views.addHandler(handler)
 
 
 def root_function(input_date: str) -> Any:
