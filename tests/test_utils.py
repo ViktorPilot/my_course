@@ -22,7 +22,7 @@ def test_get_transactions_valid() -> None:
 
 def test_get_transactions_not_valid_path() -> None:
     """Тестирование функции, преобразующей файл транзакций из формата xlsx
-    в объект dataframe при отсутствии файла транзакций в указанном пути"""
+    в объект dataframe при отсутствии файла транзакций по указанному пути"""
     with pytest.raises(FileNotFoundError):
         get_transactions("../data/oper.xlsx")
 
@@ -50,7 +50,7 @@ def test_get_greeting() -> None:
 
 @patch("src.utils.get_transactions")
 def test_get_filtred_dict_valid(mock_get_transactions: Mock, get_filtred_dict_valid: list[dict]) -> None:
-    """ "Тестирование функции, возвращающей отфильтрованный по дате и статусу список словарей
+    """Тестирование функции, возвращающей отфильтрованный по дате и статусу список словарей
     транзакций при валидных значениях"""
     mock_get_transactions.return_value.to_dict.return_value = get_filtred_dict_valid
     assert get_filtred_dict("2025-02-04 21:50:03", os.path.join(BASE_DIR, "data/operations.xlsx")) == [
@@ -114,7 +114,7 @@ def test_get_top_transactions_valid(
 @patch("src.utils.get_filtred_dict")
 def test_get_top_transactions_one(mock_get_top_transactions: Mock) -> None:
     """Тестирование функции, возвращающей топ пять транзакций по сумме платежа
-    при одной транзакции в заданном периоде"""
+    при единственнной транзакции в заданном периоде"""
     mock_get_top_transactions.return_value = [
         {
             "Дата платежа": "05.02.2025 12:01:00",
@@ -197,8 +197,7 @@ def test_get_stock_prices_valid(mock_requests_get_1: Mock, mock_json_load: Mock,
 @patch("json.load")
 @patch("requests.get")
 def test_get_stock_prices_empty(mock_requests_get_1: Mock, mock_json_load: Mock, currency_and_not_stock: dict) -> None:
-    """Тестирование функции, возвращающей список актуального курса акций S&P500
-    при возврате с сервера пустого списка"""
+    """Тестирование функции, возвращающей список актуального курса акций S&P500 при возврате с сервера пустого списка"""
     mock_json_load.return_value = currency_and_not_stock
     mock_requests_get_1.return_value.json.side_effect = [
         {

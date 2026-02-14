@@ -195,5 +195,5 @@ if __name__ == "__main__":
     print(get_greeting())
     print(get_cards_data("2020-01-03 12:49:52", "../data/operations.xlsx"))
     print(get_top_transactions("2020-01-03 12:49:52", "../data/operations.xlsx"))
-    # print(get_rate("../user_settings.json", type_currency="RUB"))
-    # print(get_stock_prices("../user_settings.json", base_currency="USD", convert_currency="RUB"))
+    print(get_rate("../user_settings.json", type_currency="RUB"))
+    print(get_stock_prices("../user_settings.json", base_currency="USD", convert_currency="RUB"))
