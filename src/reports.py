@@ -3,13 +3,16 @@ import json
 import logging
 import os.path
 from functools import wraps
-from typing import Callable, Optional, Any
+from typing import Any, Callable, Optional
 
 import pandas as pd
 
 from src.utils import get_transactions
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+
+if not os.path.exists(os.path.join(BASE_DIR, "logs")):
+    os.makedirs(os.path.join(BASE_DIR, "logs"))
 
 logger_reports = logging.getLogger("reports")
 logger_reports.setLevel("INFO")
@@ -25,12 +28,15 @@ def write_to_file(path_to_json: str | None = None) -> Callable:
 
     def wrapper(func: Callable) -> Callable:
         @wraps(func)
-        def inner(*args, **kwargs) -> Any:
+        def inner(*args: pd.DataFrame | str | None, **kwargs: dict | None) -> Any:
             result = func(*args, **kwargs)
             if not path_to_json:
                 with open(os.path.join(BASE_DIR, "data/report.json"), "w", encoding="utf-8") as file:
                     json.dump(result.to_dict(), file, indent=4, ensure_ascii=False)
-                    logger_reports.info(f"Данные успешно записаны в файл: {os.path.join(BASE_DIR, "data/report.json")}. Завершение работы декоратора.")
+                    logger_reports.info(
+                        f"Данные успешно записаны в файл: {os.path.join(BASE_DIR, "data/report.json")}. "
+                        f"Завершение работы декоратора."
+                    )
                     return result
             with open(path_to_json, "w", encoding="utf-8") as file:
                 json.dump(result.to_dict(), file, indent=4, ensure_ascii=False)
@@ -51,16 +57,18 @@ def spending_by_weekday(transactions: pd.DataFrame, date: Optional[str] = None) 
         date_obj = datetime.datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
 
     if date_obj.month > 3:
-        start_date = datetime.datetime(date_obj.year, date_obj.month - 3, date_obj.day, date_obj.hour, date_obj.minute, date_obj.second)
+        start_date = datetime.datetime(
+            date_obj.year, date_obj.month - 3, date_obj.day, date_obj.hour, date_obj.minute, date_obj.second
+        )
     else:
         start_date = datetime.datetime(date_obj.year - 1, date_obj.month + 9, date_obj.day)
     filtred_transactions_date = [
         transaction
         for transaction in transactions.to_dict(orient="records")
         if start_date
-           <= datetime.datetime.strptime(transaction.get("Дата операции", ""), "%d.%m.%Y %H:%M:%S")
-           <= date_obj
-           and transaction.get("Сумма операции", 0) < 0
+        <= datetime.datetime.strptime(transaction.get("Дата операции", ""), "%d.%m.%Y %H:%M:%S")
+        <= date_obj
+        and transaction.get("Сумма операции", 0) < 0
     ]
     for transaction in filtred_transactions_date:
         transaction["День недели"] = datetime.datetime.strftime(
@@ -75,7 +83,7 @@ def spending_by_weekday(transactions: pd.DataFrame, date: Optional[str] = None) 
             (transactions_df["Статус"] == "OK")
             & (transactions_df["Дата операции"].notnull())
             & (transactions_df["Сумма операции"].notnull())
-            ]
+        ]
         transactions_mean = abs(round(filtred_transactions_df.groupby(["Номер дня недели", "День недели"]).mean(), 2))
         transactions_mean["Средние траты в каждый из дней недели за последние три месяца"] = transactions_mean[
             "Сумма операции"

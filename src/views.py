@@ -31,12 +31,10 @@ def root_function(input_date: str) -> Any:
             os.path.join(BASE_DIR, "user_settings.json"), base_currency="USD", convert_currency="RUB"
         ),
     }
-    logger_views.info("Результат успешно получен. Завершение работы функции.")
     result_json = json.dumps(result, indent=4, ensure_ascii=False)
+    logger_views.info("Результат успешно получен. Завершение работы функции.")
     return result_json
 
 
 if __name__ == "__main__":
-    # input_date_ = input("Введите дату в формате '2020-03-15 10:50:03':\n")
-    # root_function(input_date_)
     print(root_function("2020-01-21 12:49:52"))

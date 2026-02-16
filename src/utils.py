@@ -10,6 +10,9 @@ from dotenv import load_dotenv
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
+if not os.path.exists(os.path.join(BASE_DIR, "logs")):
+    os.makedirs(os.path.join(BASE_DIR, "logs"))
+
 logger_utils = logging.getLogger("utils")
 logger_utils.setLevel("INFO")
 handler = logging.FileHandler(filename=os.path.join(BASE_DIR, "logs/logger_utils.log"), mode="w", encoding="utf-8")

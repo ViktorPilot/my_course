@@ -6,6 +6,9 @@ from typing import Any
 
 from src.views import BASE_DIR
 
+if not os.path.exists(os.path.join(BASE_DIR, "logs")):
+    os.makedirs(os.path.join(BASE_DIR, "logs"))
+
 logger_services = logging.getLogger("services")
 logger_services.setLevel("INFO")
 handler = logging.FileHandler(filename=os.path.join(BASE_DIR, "logs/logger_services.log"), mode="w", encoding="utf-8")
