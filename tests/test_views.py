@@ -17,7 +17,7 @@ def test_root_function_valid(
     mock_get_greeting: Mock,
     test_root_function_valid_1: dict,
 ) -> None:
-    """Тестирование главной функции, объединяющая функциональность приложения с валидными значениями"""
+    """Функция, объединяющая функциональность основной страницы приложения с валидными значениями"""
     mock_get_greeting.return_value = "Добрый день"
     mock_get_cards_data.return_value = [
         {"last_digits": "4556", "total_spent": 8541.02, "cashback": 85.41},
