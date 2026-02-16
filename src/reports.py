@@ -51,7 +51,7 @@ def spending_by_weekday(transactions: pd.DataFrame, date: Optional[str] = None) 
         date_obj = datetime.datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
 
     if date_obj.month > 3:
-        start_date = datetime.datetime(date_obj.year, date_obj.month - 3, date_obj.day)
+        start_date = datetime.datetime(date_obj.year, date_obj.month - 3, date_obj.day, date_obj.hour, date_obj.minute, date_obj.second)
     else:
         start_date = datetime.datetime(date_obj.year - 1, date_obj.month + 9, date_obj.day)
     filtred_transactions_date = [
@@ -89,4 +89,4 @@ def spending_by_weekday(transactions: pd.DataFrame, date: Optional[str] = None) 
 
 
 if __name__ == "__main__":
-    print(spending_by_weekday(get_transactions(os.path.join(BASE_DIR, "data/operations.xlsx")), "2020-03-31 12:49:52"))
+    print(spending_by_weekday(get_transactions(os.path.join(BASE_DIR, "data/operations.xlsx")), "2020-02-16 12:49:52"))
