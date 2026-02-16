@@ -4,8 +4,15 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from src.utils import (get_cards_data, get_filtred_dict, get_greeting, get_rate, get_stock_prices,
-                       get_top_transactions, get_transactions)
+from src.utils import (
+    get_cards_data,
+    get_filtred_dict,
+    get_greeting,
+    get_rate,
+    get_stock_prices,
+    get_top_transactions,
+    get_transactions,
+)
 from src.views import BASE_DIR
 
 
